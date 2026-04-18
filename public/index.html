@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Assistant - AI-Powered Legal Help</title>
+    <style>
+        /* ============================================
+           CSS VARIABLES - PROFESSIONAL LAW THEME
+           ============================================ */
+        :root {
+            --navy-dark: #0a1628;
+            --navy-primary: #1a2d4a;
+            --navy-light: #2d4a6f;
+            --gold-primary: #c9a962;
+            --gold-light: #e8d59b;
+            --gold-dark: #9f7f36;
+            --marble-light: #f5f5f0;
+            --marble-dark: #e8e8e0;
+            --white: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #4a4a4a;
+            --text-light: #8a8a8a;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.15);
+            --shadow-strong: 0 12px 48px rgba(0, 0, 0, 0.25);
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-primary) 50%, var(--navy-light) 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Marble texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ============================================
+           WIND PARTICLES BACKGROUND
+           ============================================ */
+        #particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, var(--gold-light) 0%, transparent 70%);
+            border-radius: 50%;
+            opacity: 0;
+            animation: windFlow 8s infinite;
+        }
+
+        @keyframes windFlow {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px) translateY(100vh) scale(0);
+            }
+            10% {
+                opacity: 0.6;
+                transform: translateX(50px) translateY(80vh) scale(1);
+            }
+            90% {
+                opacity: 0.4;
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100vw) translateY(-100px) scale(0.5);
+            }
+        }
+
+        /* ============================================
+           SCALES OF JUSTICE
+           ============================================ */
+        #scales-container {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            width: 120px;
+            height: 150px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        #scales-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .scales-base {
+            fill: var(--gold-primary);
+            transform-origin: center bottom;
+        }
+
+        .scales-left, .scales-right {
+            fill: var(--gold-light);
+            transform-origin: center top;
+        }
+
+        .scales-pole {
+            stroke: var(--gold-primary);
+            stroke-width: 3;
+            fill: none;
+        }
+
+        /* Animation classes for scales */
+        .scales-tilt-left .scales-left {
+            animation: tiltLeft 1.5s ease-in-out;
+        }
+
+        .scales-tilt-right .scales-right {
+            animation: tiltRight 1.5s ease-in-out;
+        }
+
+        .scales-balance .scales-left,
+        .scales-balance .scales-right {
+            animation: balance 2s ease-in-out;
+        }
+
+        @keyframes tiltLeft {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-15deg); }
+        }
+
+        @keyframes tiltRight {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(15deg); }
+        }
+
+        @keyframes balance {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+
+        /* ============================================
+           LANGUAGE SWITCHER
+           ============================================ */
+        #language-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 8px 12px;
+            border-radius: 25px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--gold-light);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            font-family: inherit;
+        }
+
+        .lang-btn:hover {
+            background: rgba(201, 169, 98, 0.15);
+            border-color: var(--gold-primary);
+        }
+
+        .lang-btn.active {
+            background: var(--gold-primary);
+            color: var(--navy-dark);
+            border-color: var(--gold-dark);
+        }
+
+        /* ============================================
+           MAIN CONTAINER
+           ============================================ */
+        #main-container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px 100px;
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            color: var(--gold-primary);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: var(--gold-light);
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================
+           CARDS GRID
+           ============================================ */
+        #cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-soft);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(201, 169, 98, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-strong);
+            border-color: var(--gold-primary);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .card h3 {
+            color: var(--gold-primary);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card p {
+            color: var(--marble-light);
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Locked card style */
+        .card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(80%);
+        }
+
+        .card.locked:hover {
+            transform: none;
+        }
+
+        .coming-soon-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold-primary));
+            color: var(--navy-dark);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ============================================
+           CHAT INTERFACE
+           ============================================ */
+        #chat-interface {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        #chat-interface.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Chat Header */
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(135deg, var(--navy-primary), var(--navy-light));
+            border-bottom: 2px solid var(--gold-primary);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-back-btn {
+            background: transparent;
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            font-size: 20px;
+        }
+
+        .chat-back-btn:hover {
+            background: var(--gold-primary);
+            color: var(--navy-dark);
+        }
+
+        .chat-title {
+            color: var(--gold-primary);
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .chat-header-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-action-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-light);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .chat-action-btn:hover {
+            background: var(--gold-primary);
+            color: var(--navy-dark);
+        }
+
+        /* Chat Messages Area */
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #chat-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-messages::-webkit-scrollbar-track {
+            background: var(--navy-dark);
+        }
+
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: var(--gold-primary);
+            border-radius: 4px;
+        }
+
+        .message {
+            display: flex;
+            animation: messageSlide 0.4s ease-out;
+            max-width: 75%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            margin: 0 10px;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--navy-dark);
+        }
+
+        .message.user .message-avatar {
+            background: linear-gradient(135deg, var(--navy-light), var(--navy-primary));
+            color: var(--gold-light);
+        }
+
+        .message-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 15px 20px;
+            border-radius: 18px;
+            line-height: 1.6;
+            color: var(--marble-light);
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            color: var(--navy-dark);
+            border-color: var(--gold-dark);
+        }
+
+        .message.bot .message-content {
+            border-top-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            border-top-right-radius: 4px;
+        }
+
+        /* Typing Indicator */
+        #typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            border-top-left-radius: 4px;
+            width: fit-content;
+            margin-left: 65px;
+        }
+
+        #typing-indicator.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold-primary);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+
+        /* Chat Input Area */
+        .chat-input-container {
+            padding: 20px 30px;
+            background: linear-gradient(135deg, var(--navy-primary), var(--navy-light));
+            border-top: 1px solid var(--gold-primary);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 15px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        #chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 15px 25px;
+            color: var(--white);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        #chat-input::placeholder {
+            color: var(--text-light);
+        }
+
+        #chat-input:focus {
+            border-color: var(--gold-primary);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #send-btn {
+            background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+            border: none;
+            color: var(--navy-dark);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            font-size: 1.2rem;
+        }
+
+        #send-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 20px rgba(201, 169, 98, 0.4);
+        }
+
+        #send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            #cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #language-switcher {
+                top: 10px;
+                right: 10px;
+                padding: 6px 10px;
+            }
+
+            .lang-btn {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+
+            #scales-container {
+                width: 80px;
+                height: 100px;
+                bottom: 20px;
+                left: 20px;
+            }
+
+            .chat-header {
+                padding: 15px 20px;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+
+            .chat-input-container {
+                padding: 15px 20px;
+            }
+        }
+
+        /* RTL Support for Arabic */
+        [dir="rtl"] .message.user {
+            flex-direction: row;
+        }
+
+        [dir="rtl"] .message.user .message-content {
+            border-top-left-radius: 4px;
+            border-top-right-radius: 18px;
+        }
+
+        [dir="rtl"] .message.bot .message-content {
+            border-top-right-radius: 4px;
+            border-top-left-radius: 18px;
+        }
+
+        [dir="rtl"] #typing-indicator {
+            margin-left: 0;
+            margin-right: 65px;
+        }
+    </style>
+</head>
+<body>
+    <!-- ============================================
+         WIND PARTICLES
+         ============================================ -->
+    <div id="particles-container"></div>
+
+    <!-- ============================================
+         SCALES OF JUSTICE
+         ============================================ -->
+    <div id="scales-container">
+        <svg id="scales-svg" viewBox="0 0 100 120">
+            <!-- Base -->
+            <path class="scales-base" d="M30 110 L70 110 L65 100 L35 100 Z"/>
+            <rect class="scales-base" x="47" y="40" width="6" height="60" rx="2"/>
+            <!-- Top bar -->
+            <line class="scales-pole" x1="20" y1="40" x2="80" y2="40"/>
+            <!-- Left scale -->
+            <g class="scales-left">
+                <line class="scales-pole" x1="20" y1="40" x2="20" y2="70"/>
+                <path d="M10 70 Q20 80 30 70 L25 75 Q20 85 15 75 Z" fill="var(--gold-light)"/>
+            </g>
+            <!-- Right scale -->
+            <g class="scales-right">
+                <line class="scales-pole" x1="80" y1="40" x2="80" y2="70"/>
+                <path d="M70 70 Q80 80 90 70 L85 75 Q80 85 75 75 Z" fill="var(--gold-light)"/>
+            </g>
+            <!-- Center decoration -->
+            <circle cx="50" cy="40" r="5" fill="var(--gold-primary)"/>
+            <path d="M50 35 L45 20 L50 25 L55 20 Z" fill="var(--gold-primary)"/>
+        </svg>
+    </div>
+
+    <!-- ============================================
+         LANGUAGE SWITCHER
+         ============================================ -->
+    <div id="language-switcher">
+        <button class="lang-btn active" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="fr">Français</button>
+        <button class="lang-btn" data-lang="ar">العربية</button>
+    </div>
+
+    <!-- ============================================
+         MAIN CONTAINER
+         ============================================ -->
+    <div id="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1 data-i18n="title">LEGAL ASSISTANT</h1>
+            <p data-i18n="subtitle">AI-Powered Legal Guidance at Your Fingertips</p>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cards-grid">
+            <!-- Card 1: About -->
+            <div class="card" id="about-card">
+                <span class="card-icon">⚖️</span>
+                <h3 data-i18n="aboutTitle">About</h3>
+                <p data-i18n="aboutText">This platform provides AI-powered legal assistance to help you understand your rights, navigate legal procedures, and get answers to your legal questions quickly and accurately.</p>
+            </div>
+
+            <!-- Card 2: Legal Assistant Bot -->
+            <div class="card" id="bot-card">
+                <span class="card-icon">🤖</span>
+                <h3 data-i18n="botTitle">Legal Assistant Bot</h3>
+                <p data-i18n="botText">Chat with our AI-powered legal assistant. Get instant answers to your legal questions, understand your rights, and receive guidance on legal procedures.</p>
+            </div>
+
+            <!-- Card 3: Student Mode (Locked) -->
+            <div class="card locked">
+                <span class="card-icon">🎓</span>
+                <span class="coming-soon-badge" data-i18n="comingSoon">Coming Soon</span>
+                <h3 data-i18n="studentTitle">Student Mode</h3>
+                <p data-i18n="studentText">Specialized mode for law students with case studies, legal research tools, and educational resources.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         CHAT INTERFACE (Hidden by default)
+         ============================================ -->
+    <div id="chat-interface">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <button class="chat-back-btn" id="chat-back-btn" aria-label="Back">
+                    ←
+                </button>
+                <span class="chat-title" data-i18n="chatTitle">Legal Assistant Bot</span>
+            </div>
+            <div class="chat-header-right">
+                <button class="chat-action-btn" id="clear-chat-btn" data-i18n="clearChat">Clear Chat</button>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chat-messages">
+            <!-- Welcome message -->
+            <div class="message bot">
+                <div class="message-avatar">⚖️</div>
+                <div class="message-content">
+                    <span data-i18n="welcomeMessage">Hello! I'm your AI legal assistant. How can I help you today? Ask me about legal procedures, your rights, or any legal questions you may have.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="typing-indicator">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <textarea
+                    id="chat-input"
+                    data-i18n-placeholder="inputPlaceholder"
+                    placeholder="Type your legal question here..."
+                    autocomplete="off"
+                    rows="1"
+                    style="resize: none; overflow-y: auto;"
+                ></textarea>
+                <button id="send-btn" aria-label="Send">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ============================================
+           TRANSLATIONS
+           ============================================ */
+        const translations = {
+            en: {
+                title: "LEGAL ASSISTANT",
+                subtitle: "AI-Powered Legal Guidance at Your Fingertips",
+                aboutTitle: "About",
+                aboutText: "This platform provides AI-powered legal assistance to help you understand your rights, navigate legal procedures, and get answers to your legal questions quickly and accurately.",
+                botTitle: "Legal Assistant Bot",
+                botText: "Chat with our AI-powered legal assistant. Get instant answers to your legal questions, understand your rights, and receive guidance on legal procedures.",
+                studentTitle: "Student Mode",
+                studentText: "Specialized mode for law students with case studies, legal research tools, and educational resources.",
+                comingSoon: "Coming Soon",
+                chatTitle: "Legal Assistant Bot",
+                clearChat: "Clear Chat",
+                welcomeMessage: "Hello! I'm your AI legal assistant. How can I help you today? Ask me about legal procedures, your rights, or any legal questions you may have.",
+                inputPlaceholder: "Type your legal question here..."
+            },
+            fr: {
+                title: "ASSISTANT JURIDIQUE",
+                subtitle: "Conseil juridique alimenté par l'IA à portée de main",
+                aboutTitle: "À propos",
+                aboutText: "Cette plateforme fournit une assistance juridique alimentée par l'IA pour vous aider à comprendre vos droits, naviguer dans les procédures juridiques et obtenir des réponses à vos questions juridiques rapidement et précisément.",
+                botTitle: "Assistant Juridique",
+                botText: "Discutez avec notre assistant juridique alimenté par l'IA. Obtenez des réponses instantanées à vos questions juridiques, comprenez vos droits et recevez des conseils sur les procédures juridiques.",
+                studentTitle: "Mode Étudiant",
+                studentText: "Mode spécialisé pour les étudiants en droit avec des études de cas, des outils de recherche juridique et des ressources éducatives.",
+                comingSoon: "Bientôt",
+                chatTitle: "Assistant Juridique",
+                clearChat: "Effacer",
+                welcomeMessage: "Bonjour! Je suis votre assistant juridique IA. Comment puis-je vous aider aujourd'hui? Posez-moi des questions sur les procédures juridiques, vos droits ou toute question juridique.",
+                inputPlaceholder: "Posez votre question juridique ici..."
+            },
+            ar: {
+                title: "المساعد القانوني",
+                subtitle: "إرشاد قانوني مدعوم بالذكاء الاصطناعي بين يديك",
+                aboutTitle: "حول",
+                aboutText: "توفر هذه المنصة مساعدة قانونية مدعومة بالذكاء الاصطناعي لمساعدتك على فهم حقوقك والتنقل في الإجراءات القانونية والحصول على إجابات لأسئلتك القانونية بسرعة وبدقة.",
+                botTitle: "المساعد القانوني",
+                botText: "دردش مع مساعدنا القانوني المدعوم بالذكاء الاصطناعي. احصل على إجابات فورية لأسئلتك القانونية، وافهم حقوقك، واحصل على إرشادات حول الإجراءات القانونية.",
+                studentTitle: "وضع الطالب",
+                studentText: "وضع متخصص لطلاب القانون مع دراسات حالة وأدوات بحث قانوني وموارد تعليمية.",
+                comingSoon: "قريباً",
+                chatTitle: "المساعد القانوني",
+                clearChat: "مسح",
+                welcomeMessage: "مرحباً! أنا مساعدك القانوني الذكي. كيف يمكنني مساعدتك اليوم؟ اسألني عن الإجراءات القانونية أو حقوقك أو أي أسئلة قانونية قد تكون لديك.",
+                inputPlaceholder: "اكتب سؤالك القانوني هنا..."
+            }
+        };
+
+        // Current language state
+        let currentLang = 'en';
+
+        /* ============================================
+           DOM ELEMENTS
+           ============================================ */
+        const elements = {
+            particlesContainer: document.getElementById('particles-container'),
+            scalesContainer: document.getElementById('scales-container'),
+            langSwitcher: document.getElementById('language-switcher'),
+            langBtns: document.querySelectorAll('.lang-btn'),
+            cardsGrid: document.getElementById('cards-grid'),
+            botCard: document.getElementById('bot-card'),
+            chatInterface: document.getElementById('chat-interface'),
+            chatBackBtn: document.getElementById('chat-back-btn'),
+            chatMessages: document.getElementById('chat-messages'),
+            chatInput: document.getElementById('chat-input'),
+            sendBtn: document.getElementById('send-btn'),
+            clearChatBtn: document.getElementById('clear-chat-btn'),
+            typingIndicator: document.getElementById('typing-indicator'),
+            allI18nElements: document.querySelectorAll('[data-i18n]'),
+            allI18nPlaceholder: document.querySelectorAll('[data-i18n-placeholder]')
+        };
+
+        /* ============================================
+           WIND PARTICLES SYSTEM
+           ============================================ */
+        function createParticles() {
+            const particleCount = 30;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                elements.particlesContainer.appendChild(particle);
+            }
+        }
+
+        /* ============================================
+           SCALES ANIMATION FUNCTIONS
+           These can be called from your bot logic
+           ============================================ */
+
+        /**
+         * Tilt scales to the left
+         * Call this when you want to show imbalance
+         */
+        function tiltScalesLeft() {
+            elements.scalesContainer.classList.remove('scales-tilt-right', 'scales-balance');
+            elements.scalesContainer.classList.add('scales-tilt-left');
+            setTimeout(() => {
+                elements.scalesContainer.classList.remove('scales-tilt-left');
+            }, 1500);
+        }
+
+        /**
+         * Tilt scales to the right
+         * Call this when you want to show imbalance
+         */
+        function tiltScalesRight() {
+            elements.scalesContainer.classList.remove('scales-tilt-left', 'scales-balance');
+            elements.scalesContainer.classList.add('scales-tilt-right');
+            setTimeout(() => {
+                elements.scalesContainer.classList.remove('scales-tilt-right');
+            }, 1500);
+        }
+
+        /**
+         * Balance the scales
+         * Call this when a resolution or answer is provided
+         */
+        function balanceScales() {
+            elements.scalesContainer.classList.remove('scales-tilt-left', 'scales-tilt-right');
+            elements.scalesContainer.classList.add('scales-balance');
+            setTimeout(() => {
+                elements.scalesContainer.classList.remove('scales-balance');
+            }, 2000);
+        }
+
+        // Export for external access
+        window.scalesAnimation = {
+            tiltLeft: tiltScalesLeft,
+            tiltRight: tiltScalesRight,
+            balance: balanceScales
+        };
+
+        /* ============================================
+           LANGUAGE SWITCHING
+           ============================================ */
+        function updateLanguage(lang) {
+            currentLang = lang;
+
+            // Update text content
+            elements.allI18nElements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                }
+            });
+
+            // Update placeholders
+            elements.allI18nPlaceholder.forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+
+            // Update button states
+            elements.langBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            // Update direction for Arabic
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // === CUSTOM INTEGRATION POINT ===
+            // This event fires when language changes
+            // Use this to switch your bot's language
+            if (window.onLanguageChange) {
+                window.onLanguageChange(lang);
+            }
+
+            console.log('[Language Changed]', lang);
+        }
+
+        elements.langBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                updateLanguage(btn.dataset.lang);
+            });
+        });
+
+        /* ============================================
+           CHAT INTERFACE FUNCTIONS
+           ============================================ */
+
+        /**
+         * Open the chat interface
+         */
+        function openChat() {
+            elements.chatInterface.classList.add('active');
+            elements.cardsGrid.style.display = 'none';
+            document.querySelector('.header').style.display = 'none';
+
+            // Focus input
+            setTimeout(() => elements.chatInput.focus(), 300);
+        }
+
+        /**
+         * Close the chat interface
+         */
+        function closeChat() {
+            elements.chatInterface.classList.remove('active');
+            elements.cardsGrid.style.display = 'grid';
+            document.querySelector('.header').style.display = 'block';
+        }
+
+        /**
+         * Add a message to the chat
+         * @param {string} text - Message text
+         * @param {string} sender - 'user' or 'bot'
+         */
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = sender === 'bot' ? '⚖️' : '👤';
+
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = text;
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            elements.chatMessages.appendChild(messageDiv);
+
+            // Scroll to bottom
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        /**
+         * Show typing indicator
+         */
+        function showTypingIndicator() {
+            elements.typingIndicator.classList.add('active');
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        /**
+         * Hide typing indicator
+         */
+        function hideTypingIndicator() {
+            elements.typingIndicator.classList.remove('active');
+        }
+
+        /**
+         * Clear all chat messages
+         */
+        function clearChat() {
+            elements.chatMessages.innerHTML = `
+                <div class="message bot">
+                    <div class="message-avatar">⚖️</div>
+                    <div class="message-content">
+                        <span data-i18n="welcomeMessage">${translations[currentLang].welcomeMessage}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* ============================================
+           === CUSTOM INTEGRATION POINTS ===
+           Replace these functions with your API calls
+           ============================================ */
+
+        /**
+         * === USER SENDS MESSAGE HERE ===
+         * This function is called when the user sends a message
+         *
+         * @param {string} userMessage - The message the user sent
+         */
+        async function sendMessageToBot(userMessage) {
+            console.log('[User Message]', userMessage);
+
+            try {
+                const response = await fetch('/api/chat?lang=' + currentLang, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: [{ role: 'user', content: userMessage }] })
+                });
+                const data = await response.json();
+                hideTypingIndicator();
+                displayBotResponse(data.message || data.error || 'Error occurred');
+            } catch (error) {
+                hideTypingIndicator();
+                displayBotResponse('Error: ' + error.message);
+            }
+        }
+
+        /**
+         * === DISPLAY BOT RESPONSE HERE ===
+         * Call this function to display the bot's response in the chat
+         *
+         * @param {string} responseText - The bot's response text to display
+         */
+        function displayBotResponse(responseText) {
+            console.log('[Bot Response]', responseText);
+            addMessage(responseText, 'bot');
+
+            // Optional: Trigger scales animation when bot responds
+            balanceScales();
+        }
+
+        /* ============================================
+           EVENT LISTENERS
+           ============================================ */
+
+        // Open chat when bot card is clicked
+        elements.botCard.addEventListener('click', openChat);
+
+        // Close chat when back button is clicked
+        elements.chatBackBtn.addEventListener('click', closeChat);
+
+        // Send message on button click
+        elements.sendBtn.addEventListener('click', () => {
+            const message = elements.chatInput.value.trim();
+            if (message) {
+                // Add user message to chat
+                addMessage(message, 'user');
+                elements.chatInput.value = '';
+
+                // Show typing indicator
+                showTypingIndicator();
+
+                // Trigger scales animation
+                tiltScalesLeft();
+
+                // Send to bot (replace this function with your API call)
+                sendMessageToBot(message);
+            }
+        });
+
+        // Send message on Enter (Shift+Enter = new line)
+        elements.chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                elements.sendBtn.click();
+            }
+        });
+
+        // Clear chat button
+        elements.clearChatBtn.addEventListener('click', () => {
+            if (confirm(translations[currentLang].clearChat + '?')) {
+                clearChat();
+            }
+        });
+
+        /* ============================================
+           INITIALIZATION
+           ============================================ */
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            console.log('[Legal Assistant] Initialized');
+            console.log('[Integration] Replace sendMessageToBot() and displayBotResponse() with your API logic');
+        });
+
+        // Export functions for external access
+        window.legalChatbot = {
+            sendMessage: sendMessageToBot,
+            displayResponse: displayBotResponse,
+            showTyping: showTypingIndicator,
+            hideTyping: hideTypingIndicator,
+            addMessage: addMessage,
+            scales: window.scalesAnimation,
+            setLanguage: updateLanguage,
+            getCurrentLanguage: () => currentLang
+        };
+    </script>
+</body>
+</html>
