@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import mammoth from 'mammoth';
+import legalKnowledge from '../../legal-knowledge.json';
 
 export interface DocumentChunk {
   id: string;
@@ -103,8 +104,7 @@ export async function loadDocuments(): Promise<void> {
   } catch {}
 
   try {
-    const kbData = await fs.readFile(KB_FILE, 'utf-8');
-    const kb = JSON.parse(kbData);
+    const kb = legalKnowledge as Array<{ content?: string; source?: string }>;
     for (const item of kb) {
       if (item.content && item.content.length > 100) {
         const docChunks = createChunks(item.content, item.source || 'مقتضيات شخصية');
