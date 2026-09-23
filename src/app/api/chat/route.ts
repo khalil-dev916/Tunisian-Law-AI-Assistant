@@ -97,7 +97,7 @@ export async function POST(request: NextRequest) {
     let groqResponse: Response | null = null;
     let result: Record<string, unknown> | null = null;
 
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 4; attempt++) {
       groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -118,8 +118,8 @@ export async function POST(request: NextRequest) {
         result = null;
       }
 
-      if (groqResponse.status === 429) {
-        await new Promise(r => setTimeout(r, 3000 * (attempt + 1)));
+      if (groqResponse.status === 429 && attempt < 3) {
+        await new Promise(r => setTimeout(r, 5000 * (attempt + 1)));
         continue;
       }
       break;
