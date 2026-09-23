@@ -69,8 +69,9 @@ export async function POST(request: NextRequest) {
   const question = messages[messages.length - 1]?.content || '';
   const userLang = urlLang || detectLanguage(question);
   
-  const relevantDocs = findRelevantChunks(question, 5);
-  const context = relevantDocs.join('\n\n---\n\n');
+  const relevantDocs = findRelevantChunks(question, 3);
+  let context = relevantDocs.join('\n\n---\n\n');
+  if (context.length > 3500) context = context.slice(0, 3500);
   
   const systemPrompt = userLang === 'ar' ? systemAR : systemFR;
   const respondIn = userLang === 'ar' ? 'Answer in Arabic.' : 'Answer in French.';
@@ -86,41 +87,63 @@ export async function POST(request: NextRequest) {
     
     const chatMessages = [
       { role: 'system', content: systemPrompt + '\n\n' + fullContext + '\n\n' + respondIn },
-      ...messages,
+      ...messages.slice(-6),
     ];
-    
-    const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'openai/gpt-oss-20b',
-        messages: chatMessages,
-        temperature: 0.3,
-        max_tokens: 500,
-      }),
-    });
 
-    let result;
-    try {
-      result = await groqResponse.json();
-    } catch {
+    const fallbackMsg = userLang === 'ar'
+      ? 'عذراً، تعذر توليد رد حالياً. حاول مرة أخرى.'
+      : 'Désolé, impossible de générer une réponse pour le moment. Réessayez.';
+
+    let groqResponse: Response | null = null;
+    let result: Record<string, unknown> | null = null;
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-oss-20b',
+          messages: chatMessages,
+          temperature: 0.3,
+          max_tokens: 4096,
+        }),
+      });
+
+      try {
+        result = await groqResponse.json() as Record<string, unknown>;
+      } catch {
+        result = null;
+      }
+
+      if (groqResponse.status === 429) {
+        await new Promise(r => setTimeout(r, 3000 * (attempt + 1)));
+        continue;
+      }
+      break;
+    }
+
+    if (!groqResponse || !result) {
       return NextResponse.json({ error: 'Invalid response from AI' }, { status: 500 });
     }
-    
+
     if (!groqResponse.ok) {
       console.error('Groq error:', result);
-      return NextResponse.json({ error: result.error?.message || 'Error' }, { status: 500 });
+      const errObj = result.error as { message?: string } | undefined;
+      return NextResponse.json({ error: errObj?.message || 'Error' }, { status: groqResponse.status === 429 ? 429 : 500 });
     }
 
-    if (!result.choices?.length) {
-      return NextResponse.json({ message: 'Sorry.' });
+    const choices = result.choices as Array<{ message?: { content?: string } }> | undefined;
+    const content = choices?.[0]?.message?.content?.trim();
+
+    if (!content) {
+      return NextResponse.json({ message: fallbackMsg });
     }
 
     return NextResponse.json({
-      message: result.choices[0].message.content,
+      message: content,
     }, {
       headers: {
         'Access-Control-Allow-Origin': '*',
